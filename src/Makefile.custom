@@ -15,7 +15,7 @@ cleantags-recursive:
 
 # For using arbitrary length integers
 # Should be set if USE_ARBITRARY_PRECISION_INDEX is set to 1
-#GMP_LD=-lgmpxx -lgmp
+GMP_LD=-lgmpxx -lgmp
 
 
 LIBDAI_NORMAL = $(top_builddir)/src/libDAI/libDAI.la
@@ -30,16 +30,16 @@ LIBDAI_INCLUDES =  -I$(top_srcdir)/src/libDAI
 # -lmat -leng -lmx -lut
 
 # the open PNL library
-#PNL_LD = #define PNL library path 
+#PNL_LD = #define PNL library path
 #PNL_INCLUDES = #define the PNL includes.
 #typically something like
 #PNL_LD = -L/home/faolieho/Documents/software/PNL/high/source -L/home/faolieho/Documents/software/PNL/cxcore/cxcore/src -L/home/faolieho/Documents/software/PNL/c_pgmtk/src -lhigh -lpnl -lcxcore -lpthread
 #and
 #PNL_INCLUDES = -I$(HOME)/include/pnl -I$(HOME)/include/pnl/high -I$(HOME)/include/pnl/opencx  -I$(HOME)/include/pnl/cart
 #
-#NOTE: in order to build DEBUG libraries (i.e., include the debug version of 
+#NOTE: in order to build DEBUG libraries (i.e., include the debug version of
 # the PNL lib), the PNL_LD path should point to where the PNL library is built,
-# rather than installed. For some reason things are not working smoothly when 
+# rather than installed. For some reason things are not working smoothly when
 # pointing to the installation libdir (something to do with libtool I think).
 
 
@@ -47,7 +47,7 @@ LIBDAI_INCLUDES =  -I$(top_srcdir)/src/libDAI
 # Compiler flags
 
 
-# the debug flags used - according to 
+# the debug flags used - according to
 # http://sourceware.org/gdb/current/onlinedocs/gdb_13.html#SEC111
 # dwarf-2 is best for c++ and gdb
 # -fno-inline should make things easier to debug
@@ -69,8 +69,8 @@ endif
 
 #default flags throughout all MADP:
 MADP_CXXFLAGS = -pipe $(MARCH_FLAGS) $(CSTANDARD) $(XML2_CXXFLAGS)
-MADP_CPPFLAGS = 
-MADP_CFLAGS =  
+MADP_CPPFLAGS =
+MADP_CFLAGS =
 
 #####################################################################
 # The final include path
@@ -80,7 +80,10 @@ MADP_INCLUDES = \
  $(LIBDAI_INCLUDES)\
  -I$(top_srcdir)/src/boost
 
-MADP_LD = 
+MADP_LD = \
+ $(GMP_LD) \
+ $(MATLAB_LD) \
+ $(PNL_LD)
 
 #####################################################################
 # Lists of libs to be linked with binaries.
@@ -90,7 +93,7 @@ MADPLIBS_NORMAL_BASE = \
 
 MADPLIBS_NORMAL_BASE_SUPPORT = \
  $(top_builddir)/src/support/libMADPSupport.la \
- $(MADPLIBS_NORMAL_BASE) 
+ $(MADPLIBS_NORMAL_BASE)
 
 MADPLIBS_NORMAL_BASE_PARSER = \
  $(top_builddir)/src/parser/libMADPParser.la \
@@ -99,7 +102,7 @@ MADPLIBS_NORMAL_BASE_PARSER = \
 
 MADPLIBS_NORMAL_BASE_PARSER_SUPPORT = \
  $(top_builddir)/src/support/libMADPSupport.la \
- $(MADPLIBS_NORMAL_BASE_PARSER) 
+ $(MADPLIBS_NORMAL_BASE_PARSER)
 
 MADPLIBS_NORMAL = $(top_builddir)/src/madp/libMADP.la
 # $(top_builddir)/src/planning/libMADPPlanning.la \
