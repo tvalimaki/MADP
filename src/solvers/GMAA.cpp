@@ -1,8 +1,8 @@
-/* This file is part of the Multiagent Decision Process (MADP) Toolbox. 
+/* This file is part of the Multiagent Decision Process (MADP) Toolbox.
  *
  * The majority of MADP is free software released under GNUP GPL v.3. However,
- * some of the included libraries are released under a different license. For 
- * more information, see the included COPYING file. For other information, 
+ * some of the included libraries are released under a different license. For
+ * more information, see the included COPYING file. For other information,
  * please refer to the included README file.
  *
  * This file has been written and/or modified by the following people:
@@ -44,12 +44,12 @@
 
 #include "BGIP_SolverType.h"
 #include "BGIP_SolverCreator_AM.h"
-#include "BGIP_SolverCreator_BFS.h" 
+#include "BGIP_SolverCreator_BFS.h"
 #include "BGIP_SolverCreator_CE.h"
 #include "BGIP_SolverCreator_MP.h"
-#include "BGIP_SolverCreator_BnB.h" 
-#include "BGIP_SolverCreator_Random.h" 
-#include "BGIP_SolverCreator_BFSNonInc.h" 
+#include "BGIP_SolverCreator_BnB.h"
+#include "BGIP_SolverCreator_Random.h"
+#include "BGIP_SolverCreator_BFSNonInc.h"
 
 #include "argumentHandlers.h"
 #include "argumentUtils.h"
@@ -134,9 +134,9 @@ int main(int argc, char **argv)
 {
     ArgumentHandlers::Arguments args;
     argp_parse (&ArgumentHandlers::theArgpStruc, argc, argv, 0, 0, &args);
-    
+
     bool errorOccurred=false;
-try 
+try
 {
 
     if(args.verbose >= 0)
@@ -158,7 +158,7 @@ try
         case FSPC:
             description << "FSPC (JAIR 2008)";
             break;
-        case kGMAA: 
+        case kGMAA:
             description << "kGMAA (JAIR 2008)";
             break;
         }
@@ -170,12 +170,12 @@ try
         cout << description.str() << endl;
     }
 
-    Timing Time;    
+    Timing Time;
     tms ts_before, ts_after;
     clock_t ticks_before, ticks_after;
     Time.Start("Overall");
     Time.Start("PlanningUnit");
-//timer starting - don't do file I/O (if possible)        
+//timer starting - don't do file I/O (if possible)
     ticks_before = times(&ts_before);
 
     srand(time(0));
@@ -225,7 +225,7 @@ try
     // Instantiates bgsc_p or bgscCluster_p
     BGIP_SolverCreatorInterface * bgipsc_p = 0;
     GetBGIPSolverCreatorInstances(args,bgipsc_p);
-    if(bgipsc_p && args.verbose >= 1)    
+    if(bgipsc_p && args.verbose >= 1)
         cout << "BGIP_SolverCreatorInterface instance: " << bgipsc_p->SoftPrint() << endl;
 
     // We need to make sure that the first GMAA instance exists until
@@ -260,12 +260,12 @@ try
     //stringstream tempCout;
 
     //here the computation of the Q function starts
-    try 
-    { 
+    try
+    {
         if(args.verbose >= 1)
             cout << "Computing the Q heuristic ("<<SoftPrint(args.qheur)<<")..."<<endl;
         Time.Start("ComputeQ");
-        //timer starting - don't do file I/O (if possible)        
+        //timer starting - don't do file I/O (if possible)
         ticks_before = times(&ts_before);
         if(args.useQcache || args.requireQcache)
         {
@@ -300,7 +300,7 @@ try
     for(int restartI = 0; restartI < args.nrRestarts; restartI++)
     {
         // no point in running all restarts if an error occurred
-        if(errorOccurred) 
+        if(errorOccurred)
             break;
 
         cout << endl
@@ -318,7 +318,7 @@ try
 
         gmaa->SetQHeuristic(q);
 
-//timer starting - don't do file I/O (if possible)        
+//timer starting - don't do file I/O (if possible)
         Time.Start("Plan");
         ticks_before = times(&ts_before);
 
@@ -357,10 +357,10 @@ try
         cout << "\nvalue="<< V << endl;
         total_value+=V;
 
-        
-    //output the found policy    
+
+    //output the found policy
         boost::shared_ptr<JointPolicyDiscretePure> found_jpol;
-        if(!args.useBGclustering && args.horizon<15)
+        if(args.horizon<15) // !args.useBGclustering && : Tuomas
         {
             // with clustering or with a high horizon we don't want to
             // expand the policy, takes too long
@@ -368,12 +368,12 @@ try
             if(args.verbose >= 1)
                 cout << found_jpol->SoftPrint();
             of_jpol <<  found_jpol->SoftPrint();
-            for(Index k=0;k!=gmaa->GetNrAgents();++k)
+            /*for(Index k=0;k!=gmaa->GetNrAgents();++k)
             {
                 const PolicyDiscretePure* policyDiscretePure=
                     static_cast<PolicyDiscretePure*>(found_jpol->GetIndividualPolicyDiscrete(k));
                 of_jpol << endl << gmaa->PolicyToDotGraph(*policyDiscretePure,k);
-            }
+            }*/ // Tuomas
         }
         else
             of_jpol << "Not outputting joint policy" << endl;
@@ -390,7 +390,7 @@ try
                 if(!db.IsOptimal(V))
                 {
                     stringstream ss;
-                    ss << "OptimalValueDatabase: GMAA error, computed value " << V 
+                    ss << "OptimalValueDatabase: GMAA error, computed value " << V
                        << " does not match"
                        << " previously computed optimal value "
                        << db.GetOptimalValue();
@@ -411,7 +411,7 @@ try
                     continue;
                 }
                 else // otherwise save new value
-                    try { db.SetOptimalValue(V);}  
+                    try { db.SetOptimalValue(V);}
                     catch(E& e){ e.Print(); }
             }
         }
@@ -451,9 +451,9 @@ try
         SimulationResult result;
         if(args.useBGclustering)
         {
-            boost::shared_ptr<JointPolicyDiscretePure> jppv = 
+            boost::shared_ptr<JointPolicyDiscretePure> jppv =
                 gmaa->GetJointPolicyDiscretePure();
-            boost::shared_ptr<JointPolicyPureVectorForClusteredBG> jp4CBG = 
+            boost::shared_ptr<JointPolicyPureVectorForClusteredBG> jp4CBG =
                 boost::dynamic_pointer_cast<JointPolicyPureVectorForClusteredBG>
                 ( jppv );
             if(jp4CBG == 0)
@@ -465,7 +465,7 @@ try
         Time.Stop("Simulation");
         Vsim = result.GetAvgReward();
         if(args.verbose >= 0)
-            cout << "Sampled value = " << Vsim 
+            cout << "Sampled value = " << Vsim
                  <<" (computed was " << V << ")" << endl;
 
         clock_t wc_time_maa =  ticks_after - ticks_before;
@@ -483,7 +483,7 @@ try
             cout << endl << "Cluster statistics:"<<endl;
             static_cast<GMAA_MAAstarCluster*>(gmaa)->PrintClusteringStats();
         }
-        
+
         of_jpol << "\nSampled value =  " << Vsim << " (nrSimRuns="<<
             nrSimRuns<< ")\nComputed value = " << V <<  endl;
         of_jpol.flush();
@@ -498,7 +498,7 @@ try
 \twc-Qcom\tut-Qcom\tst-Qcom\
 \twc-init\tut-init\tst-init\
 \tnrEvalBGjpols\tmaxPoolSize\tJPindex\tk - times are in ticks (1/"<<
-sysconf(_SC_CLK_TCK)<<"s)"<< 
+sysconf(_SC_CLK_TCK)<<"s)"<<
 "and are GMAAF times (do not include heuristic computation)"<<endl;
             }
 
@@ -533,7 +533,7 @@ sysconf(_SC_CLK_TCK)<<"s)"<<
                    << " avg value: " << total_value/args.nrRestarts
                    << endl;
         }
-        
+
         if(!args.dryrun)
         {
             if(args.saveTimings)
@@ -563,7 +563,7 @@ sysconf(_SC_CLK_TCK)<<"s)"<<
             Time.PrintSummary();
             gmaa->PrintTimersSummary();
         }
-#if 1 // not very informative        
+#if 0 // not very informative : Tuomas 1 -> 0
         SampleRandomPolicy(decpomdp,args);
 #endif
     }
@@ -575,11 +575,11 @@ sysconf(_SC_CLK_TCK)<<"s)"<<
     delete bgipsc_p;
     delete decpomdp;
 }
-catch(E& e){ 
-    e.Print(); 
-    exit(-1); 
+catch(E& e){
+    e.Print();
+    exit(-1);
 }
- 
+
  return errorOccurred;
 }
 
@@ -640,7 +640,7 @@ void InitializeOutput(ArgumentHandlers::Arguments &args,
             << "_" << q->SoftPrintBrief() << "_h" << args.horizon
             << "_restarts"<< args.nrRestarts;
 
-        //check the method specific arguments 
+        //check the method specific arguments
         //and add them to file name
         if(args.useBGclustering)
         {
@@ -657,7 +657,7 @@ void InitializeOutput(ArgumentHandlers::Arguments &args,
         case MAAstarClassic:
         case FSPC:
             break;
-        case kGMAA: 
+        case kGMAA:
             ss << "_k" << args.k;
             break;
         }
@@ -680,11 +680,11 @@ void InitializeOutput(ArgumentHandlers::Arguments &args,
                 ss << "_AM_restarts"<< args.nrAMRestarts;
                 break;
             case CE:
-                ss  << "_CEr" << args.nrCERestarts 
+                ss  << "_CEr" << args.nrCERestarts
                     << "_i" << args.nrCEIterations
-                    << "_s" << args.nrCESamples 
+                    << "_s" << args.nrCESamples
                     << "_sfu" << args.nrCESamplesForUpdate
-                    << "_a" << args.CE_alpha 
+                    << "_a" << args.CE_alpha
                     << "_ht" << args.CE_use_hard_threshold;
                 break;
             case MaxPlus:
@@ -697,7 +697,7 @@ void InitializeOutput(ArgumentHandlers::Arguments &args,
             case CGBG_MaxPlus:
                 break;
             case NDP:
-                break;    
+                break;
             case Random:
                 ss << "_Random";
                 break;
@@ -720,11 +720,11 @@ void InitializeOutput(ArgumentHandlers::Arguments &args,
                     exit(EXIT_SUCCESS);
                 }
             }
-            
+
             if(S_ISREG(sb.st_mode) &&
                sb.st_size==0)
                 fileExists=false;
-            
+
             if(fileExists)
             {
                 cout << "Results file " << filename
@@ -845,7 +845,7 @@ GeneralizedMAAStarPlannerForDecPOMDPDiscrete* GetGMAAInstance(
             gmaa->SetSaveAllBGs(bgFilename);
         }
     }
-    
+
     gmaa->SetVerbose(args.verbose);
     if(args.GMAAdeadline)
         gmaa->SetDeadline(args.GMAAdeadline);
@@ -870,7 +870,7 @@ void GetBGIPSolverCreatorInstances(
         {
         case BFS:
             if(args.useBGclustering)
-                bgipsc_p = 
+                bgipsc_p =
                     new BGIP_SolverCreator_BFS<JointPolicyPureVectorForClusteredBG>(
                         args.verbose, args.k);
             else
@@ -878,7 +878,7 @@ void GetBGIPSolverCreatorInstances(
             break;
         case BFSNonInc:
             if(args.useBGclustering)
-                bgipsc_p = 
+                bgipsc_p =
                     new BGIP_SolverCreator_BFSNonInc<JointPolicyPureVectorForClusteredBG>(
                         args.verbose, args.k);
             else
@@ -887,7 +887,7 @@ void GetBGIPSolverCreatorInstances(
             break;
         case AM:
             if(args.useBGclustering)
-                bgipsc_p = 
+                bgipsc_p =
                     new BGIP_SolverCreator_AM<JointPolicyPureVectorForClusteredBG>(
                         args.nrAMRestarts, args.verbose, args.k);
             else
@@ -895,7 +895,7 @@ void GetBGIPSolverCreatorInstances(
                     args.nrAMRestarts, args.verbose, args.k);
             break;
 
-        case CE:       
+        case CE:
             if(args.useBGclustering)
                 throw(E("BGIP_SolverCE does not work yet with clustered policies"));
             else
@@ -912,15 +912,15 @@ void GetBGIPSolverCreatorInstances(
             if(args.useBGclustering)
                 bgipsc_p =
                     new BGIP_SolverCreator_MP<JointPolicyPureVectorForClusteredBG> (
-                    args.maxplus_maxiter, args.maxplus_updateT, 
-                    args.maxplus_verbose, args.maxplus_damping, 
+                    args.maxplus_maxiter, args.maxplus_updateT,
+                    args.maxplus_verbose, args.maxplus_damping,
                     args.k,//<- nr solutions to return by BG solver
                     args.maxplus_nrRestarts
                     );
             else
                 bgipsc_p = new BGIP_SolverCreator_MP<JointPolicyPureVector> (
-                    args.maxplus_maxiter, args.maxplus_updateT, 
-                    args.maxplus_verbose, args.maxplus_damping, 
+                    args.maxplus_maxiter, args.maxplus_updateT,
+                    args.maxplus_verbose, args.maxplus_damping,
                     args.k,//<- nr solutions to return by BG solver
                     args.maxplus_nrRestarts
                     );
@@ -938,13 +938,13 @@ void GetBGIPSolverCreatorInstances(
                      args.BnBJointTypeOrdering,
                      args.BnB_consistentCompleteInformationHeur);
             break;
-            
+
         case CGBG_MaxPlus:
             throw E("CGBG max plus only works with factored Dec-POMDPs (use GMAAF instead)");
             break;
 
         case Random:
-            
+
             if(args.useBGclustering)
                 throw E("Random not implemented for clustered GMAA");
             else
